@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fosuna-g <fosuna-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fernando <fernando@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 20:45:07 by fernando          #+#    #+#             */
-/*   Updated: 2024/02/14 19:48:59 by fosuna-g         ###   ########.fr       */
+/*   Updated: 2024/02/15 12:50:20 by fernando         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,15 @@ char	*ft_read_arc(int fd, char *buffer, char *lect)
 	return (free(buffer), lect);
 }
 
+char	*ft_rest_next_line(char *lect)
+{
+	
+}
+
 char	*ft_read_line(char *lect, char *line)
 {
 	int		i;
+	int		j;
 	char	*aux;
 
 	i = 0;
@@ -41,16 +47,31 @@ char	*ft_read_line(char *lect, char *line)
 			j++;
 		i++;
 	}
-	aux = (char *)malloc(sizeof(char) * j);
+	aux = (char *)malloc(sizeof(char) * (j + 1));
+	if (!aux)
+		return (0);
 	i -= j;
 	j = 0;
 	while (lect[i])
 	{
 		aux[j] = lect[i];
 		i++;
+		j++;
 	}
-	if (!aux)
+	aux[j] = '\0';
+	i -= j;
+	j = 0;
+	line = (char *)malloc(sizeof(char) * (i + 1));
+	if (!line)
 		return (0);
+	while (j < i)
+	{
+		line[j] = lect[j];
+		lect[j] = '\0';
+		j++;
+	}
+	if (lect[i] == '\n')
+		line[j++] = '\n';
 	free(aux);
 	return (line);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fosuna-g <fosuna-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fernando <fernando@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 20:42:46 by fernando          #+#    #+#             */
-/*   Updated: 2024/02/14 18:15:27 by fosuna-g         ###   ########.fr       */
+/*   Updated: 2024/02/15 12:14:51 by fernando         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,5 +20,6 @@
 # include <fcntl.h>
 
 char	*get_next_line(int fd);
+int ft_strchr(const char *str, char c);
 
 #endif
