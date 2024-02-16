@@ -3,95 +3,120 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fernando <fernando@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fosuna-g <fosuna-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 20:45:07 by fernando          #+#    #+#             */
-/*   Updated: 2024/02/15 12:50:20 by fernando         ###   ########.fr       */
+/*   Updated: 2024/02/16 19:50:52 by fosuna-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdio.h>
 
-char	*ft_read_arc(int fd, char *buffer, char *lect)
+char	*ft_free(char *lect, char *buffer)
 {
-	int	buffn;
+	char	*temp;
 
-	buffn = read(fd, buffer, BUFFER_SIZE);
-	while (buffn < 0 || !ft_strchr(lect, '\n'))
+	temp = ft_strjoin(lect, buffer);
+	free(lect);
+	return (temp);
+}
+
+char	*ft_read_arc(int fd, char *lect)
+{
+	int		buffn;
+	char	*buffer;
+
+	if (!lect)
+		ft_calloc(1, 1);
+	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+	buffn = 1;
+	while (buffn > 0 && !ft_strchr(lect, '\n'))
 	{
-		lect = ft_strjoin(lect, buffer);
 		buffn = read(fd, buffer, BUFFER_SIZE);
 		if (buffn < 0)
-			free(buffer);
+			return (free(buffer), NULL);
+		buffer[buffn] = '\0';
+		lect = ft_free(lect, buffer);
 	}
 	return (free(buffer), lect);
 }
 
-char	*ft_rest_next_line(char *lect)
+char	*ft_next(char *lect)
 {
-	
+	char	*aux;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	while (lect[i] && lect[i] != '\n')
+		i++;
+	if (!lect[i])
+		return (free(lect), NULL);
+	aux = (char *)malloc((ft_strlen(lect) - i + 1) * sizeof(char));
+	if (!aux)
+		return (0);
+	i++;
+	j = 0;
+	while (lect[i])
+		aux[j++] = lect[i++];
+	aux[j] = '\0';
+	return (free(lect), aux);
 }
 
 char	*ft_read_line(char *lect, char *line)
 {
 	int		i;
 	int		j;
-	char	*aux;
 
 	i = 0;
-	j = 0;
-	while (lect[i])
-	{
-		if (lect[i] == '\n' || j > 0)
-			j++;
-		i++;
-	}
-	aux = (char *)malloc(sizeof(char) * (j + 1));
-	if (!aux)
+	if (!lect[i])
 		return (0);
-	i -= j;
-	j = 0;
-	while (lect[i])
-	{
-		aux[j] = lect[i];
+	while (lect[i] && lect[i] != '\n')
 		i++;
-		j++;
-	}
-	aux[j] = '\0';
-	i -= j;
+	line = ft_calloc(i + 2, sizeof(char));
 	j = 0;
-	line = (char *)malloc(sizeof(char) * (i + 1));
-	if (!line)
-		return (0);
-	while (j < i)
+	while (lect[j] && lect[j] != '\n')
 	{
 		line[j] = lect[j];
-		lect[j] = '\0';
 		j++;
 	}
-	if (lect[i] == '\n')
+	if (lect[j] == '\n' || lect[j])
 		line[j++] = '\n';
-	free(aux);
+	line[j] = 0;
 	return (line);
 }
 
 char	*get_next_line(int fd)
 {
-	char		*buffer;
 	static char	*lect;
 	char		*line;
 
-	buffer = (char *)malloc(sizeof(char) * BUFFER_SIZE);
-	lect = ft_read_arc(fd, buffer, lect);
+	line = NULL;
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (0);
+	if (read(fd, 0, 0) < 0)
+	{
+		free(lect);
+		lect = NULL;
+		return (NULL);
+	}
+	lect = ft_read_arc(fd, lect);
+	if (!lect)
+		return (0);
 	line = ft_read_line(lect, line);
+	lect = ft_next(lect);
+	return (line);
 }
 
-int	main(void)
+/* int	main(void)
 {
 	int	fd;
 
 	fd = open("text.txt", O_RDONLY);
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
-}
+	printf("%s", get_next_line(fd));
+	return (0);
+} */
