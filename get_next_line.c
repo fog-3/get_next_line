@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fosuna-g <fosuna-g@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fernando <fernando@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 20:45:07 by fernando          #+#    #+#             */
-/*   Updated: 2024/02/16 19:50:52 by fosuna-g         ###   ########.fr       */
+/*   Updated: 2024/02/17 16:36:10 by fernando         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ char	*ft_free(char *lect, char *buffer)
 
 	temp = ft_strjoin(lect, buffer);
 	free(lect);
+	lect = NULL;
 	return (temp);
 }
 
@@ -39,7 +40,9 @@ char	*ft_read_arc(int fd, char *lect)
 		buffer[buffn] = '\0';
 		lect = ft_free(lect, buffer);
 	}
-	return (free(buffer), lect);
+	free(buffer);
+	buffer = NULL;
+	return (lect);
 }
 
 char	*ft_next(char *lect)
@@ -53,7 +56,11 @@ char	*ft_next(char *lect)
 	while (lect[i] && lect[i] != '\n')
 		i++;
 	if (!lect[i])
-		return (free(lect), NULL);
+	{
+		free(lect);
+		lect = NULL;
+		return (NULL);
+	}
 	aux = (char *)malloc((ft_strlen(lect) - i + 1) * sizeof(char));
 	if (!aux)
 		return (0);
@@ -62,7 +69,9 @@ char	*ft_next(char *lect)
 	while (lect[i])
 		aux[j++] = lect[i++];
 	aux[j] = '\0';
-	return (free(lect), aux);
+	free(lect);
+	lect = NULL;
+	return (aux);
 }
 
 char	*ft_read_line(char *lect, char *line)
@@ -115,7 +124,6 @@ char	*get_next_line(int fd)
 	int	fd;
 
 	fd = open("text.txt", O_RDONLY);
-	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	printf("%s", get_next_line(fd));
 	return (0);
