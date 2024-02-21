@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fernando <fernando@student.42.fr>          +#+  +:+       +#+        */
+/*   By: fosuna-g <fosuna-g@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 20:45:07 by fernando          #+#    #+#             */
-/*   Updated: 2024/02/17 16:36:10 by fernando         ###   ########.fr       */
+/*   Updated: 2024/02/21 12:52:02 by fosuna-g         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdio.h>
+#include <string.h>
 
 char	*ft_free(char *lect, char *buffer)
 {
@@ -29,14 +30,18 @@ char	*ft_read_arc(int fd, char *lect)
 	char	*buffer;
 
 	if (!lect)
-		ft_calloc(1, 1);
+		lect = ft_calloc(1, 1);
 	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	buffn = 1;
 	while (buffn > 0 && !ft_strchr(lect, '\n'))
 	{
 		buffn = read(fd, buffer, BUFFER_SIZE);
 		if (buffn < 0)
-			return (free(buffer), NULL);
+		{
+			free(buffer);
+			buffer = NULL;
+			return (NULL);
+		}
 		buffer[buffn] = '\0';
 		lect = ft_free(lect, buffer);
 	}
@@ -61,23 +66,23 @@ char	*ft_next(char *lect)
 		lect = NULL;
 		return (NULL);
 	}
-	aux = (char *)malloc((ft_strlen(lect) - i + 1) * sizeof(char));
+	aux = ft_calloc((ft_strlen(lect) - i + 1), sizeof(char));
 	if (!aux)
 		return (0);
 	i++;
 	j = 0;
 	while (lect[i])
 		aux[j++] = lect[i++];
-	aux[j] = '\0';
 	free(lect);
 	lect = NULL;
 	return (aux);
 }
 
-char	*ft_read_line(char *lect, char *line)
+char	*ft_read_line(char *lect)
 {
 	int		i;
 	int		j;
+	char	*line;
 
 	i = 0;
 	if (!lect[i])
@@ -91,9 +96,8 @@ char	*ft_read_line(char *lect, char *line)
 		line[j] = lect[j];
 		j++;
 	}
-	if (lect[j] == '\n' || lect[j])
+	if (lect[j] == '\n' && lect[j])
 		line[j++] = '\n';
-	line[j] = 0;
 	return (line);
 }
 
@@ -102,7 +106,6 @@ char	*get_next_line(int fd)
 	static char	*lect;
 	char		*line;
 
-	line = NULL;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (0);
 	if (read(fd, 0, 0) < 0)
@@ -114,17 +117,20 @@ char	*get_next_line(int fd)
 	lect = ft_read_arc(fd, lect);
 	if (!lect)
 		return (0);
-	line = ft_read_line(lect, line);
+	line = ft_read_line(lect);
 	lect = ft_next(lect);
 	return (line);
 }
 
 /* int	main(void)
 {
-	int	fd;
+	int		fd;
+	char	*s;
 
 	fd = open("text.txt", O_RDONLY);
-	printf("%s", get_next_line(fd));
-	printf("%s", get_next_line(fd));
+	get_next_line(fd);
+	s = get_next_line(fd);
+	printf("%i", strcmp(s, "1"));
+	get_next_line(fd);
 	return (0);
 } */
